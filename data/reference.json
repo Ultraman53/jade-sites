@@ -1,0 +1,495 @@
+{
+    "signs": {
+        "aries": {
+            "name": "Aries",
+            "symbol": "♈",
+            "dates": "March 21 – April 19",
+            "element": "Fire",
+            "modality": "Cardinal",
+            "ruler": "Mars",
+            "profile": "Aries is the first sign of the zodiac: direct, brave and happiest when starting something new.",
+            "core": "At your core you are a starter. You come alive when there is something to begin, defend or win, and you trust action more than overthinking.",
+            "inner": "Emotionally you feel things fast and honestly. You need room to react, and you calm down quickest when you can move your body or take charge of the problem.",
+            "outer": "People meet you as energetic and straightforward. First impressions of you are rarely neutral: you come across as someone who gets things moving."
+        },
+        "taurus": {
+            "name": "Taurus",
+            "symbol": "♉",
+            "dates": "April 20 – May 20",
+            "element": "Earth",
+            "modality": "Fixed",
+            "ruler": "Venus",
+            "profile": "Taurus is steady, sensual and loyal, building comfort and security one patient step at a time.",
+            "core": "At your core you are a builder. You value what lasts: people you can rely on, work that pays off, and a home that feels good to come back to.",
+            "inner": "Emotionally you need stability and physical comfort. Good food, touch and familiar routines restore you more than words ever could.",
+            "outer": "People meet you as calm and grounded. You give off a reassuring, unhurried presence that others instinctively trust."
+        },
+        "gemini": {
+            "name": "Gemini",
+            "symbol": "♊",
+            "dates": "May 21 – June 20",
+            "element": "Air",
+            "modality": "Mutable",
+            "ruler": "Mercury",
+            "profile": "Gemini is curious, quick-witted and social, always collecting ideas, stories and new connections.",
+            "core": "At your core you are a connector. Your mind is your playground, and you thrive on conversation, learning and variety.",
+            "inner": "Emotionally you process by talking things through. When something bothers you, putting it into words is how you find your balance again.",
+            "outer": "People meet you as lively and easy to talk to. You come across as bright, funny and genuinely interested in others."
+        },
+        "cancer": {
+            "name": "Cancer",
+            "symbol": "♋",
+            "dates": "June 21 – July 22",
+            "element": "Water",
+            "modality": "Cardinal",
+            "ruler": "the Moon",
+            "profile": "Cancer is caring, intuitive and protective, with a deep loyalty to family and the people it calls home.",
+            "core": "At your core you are a nurturer. You build safe places for the people you love, and your instincts about others are usually right.",
+            "inner": "Emotionally you feel deeply and remember everything. You need to feel safe before you open up, and once you do, your loyalty runs deep.",
+            "outer": "People meet you as warm but a little reserved at first. Once they are let in, they find you are one of the kindest people they know."
+        },
+        "leo": {
+            "name": "Leo",
+            "symbol": "♌",
+            "dates": "July 23 – August 22",
+            "element": "Fire",
+            "modality": "Fixed",
+            "ruler": "the Sun",
+            "profile": "Leo is warm, generous and expressive, with a natural talent for leadership and bringing people together.",
+            "core": "At your core you are a creator. You want your life to mean something and to be seen, and you light up any room where you feel appreciated.",
+            "inner": "Emotionally you need warmth and recognition. Feeling valued by the people you love matters more to you than you usually admit.",
+            "outer": "People meet you as confident and charismatic. You come across as someone with presence, even when you are quietly nervous inside."
+        },
+        "virgo": {
+            "name": "Virgo",
+            "symbol": "♍",
+            "dates": "August 23 – September 22",
+            "element": "Earth",
+            "modality": "Mutable",
+            "ruler": "Mercury",
+            "profile": "Virgo is thoughtful, practical and helpful, with a sharp eye for detail and a real desire to improve things.",
+            "core": "At your core you are a healer and a fixer. You notice what others miss, and you show love by being useful.",
+            "inner": "Emotionally you feel calmer when life is in order. Small routines, lists and tidy spaces quiet a mind that rarely switches off.",
+            "outer": "People meet you as composed and capable. You come across as the one who has thought it through, and others lean on that."
+        },
+        "libra": {
+            "name": "Libra",
+            "symbol": "♎",
+            "dates": "September 23 – October 22",
+            "element": "Air",
+            "modality": "Cardinal",
+            "ruler": "Venus",
+            "profile": "Libra is charming, fair-minded and relationship-focused, always seeking balance, beauty and harmony.",
+            "core": "At your core you are a peacemaker. You see every side of a story, and you are at your best in partnership with others.",
+            "inner": "Emotionally you need harmony around you. Conflict drains you, and beauty, kindness and good company restore you quickly.",
+            "outer": "People meet you as gracious and easy to like. You come across as diplomatic, stylish and socially at ease."
+        },
+        "scorpio": {
+            "name": "Scorpio",
+            "symbol": "♏",
+            "dates": "October 23 – November 21",
+            "element": "Water",
+            "modality": "Fixed",
+            "ruler": "Pluto and Mars",
+            "profile": "Scorpio is intense, perceptive and fiercely loyal, never satisfied with the surface of anything.",
+            "core": "At your core you are a transformer. You want the truth, all of it, and you have a rare strength for rebuilding after hard times.",
+            "inner": "Emotionally you run deep and private. Trust is earned slowly with you, but once given, your devotion is total.",
+            "outer": "People meet you as magnetic and a little mysterious. You come across as someone who sees more than you say."
+        },
+        "sagittarius": {
+            "name": "Sagittarius",
+            "symbol": "♐",
+            "dates": "November 22 – December 21",
+            "element": "Fire",
+            "modality": "Mutable",
+            "ruler": "Jupiter",
+            "profile": "Sagittarius is adventurous, optimistic and honest, forever chasing the next horizon and the bigger picture.",
+            "core": "At your core you are an explorer. You need freedom, meaning and room to grow, whether through travel, ideas or faith.",
+            "inner": "Emotionally you bounce back with humor and hope. Feeling boxed in is the fastest way to upset you; space and adventure heal you.",
+            "outer": "People meet you as cheerful and open. You come across as fun, frank and refreshingly unpretentious."
+        },
+        "capricorn": {
+            "name": "Capricorn",
+            "symbol": "♑",
+            "dates": "December 22 – January 19",
+            "element": "Earth",
+            "modality": "Cardinal",
+            "ruler": "Saturn",
+            "profile": "Capricorn is ambitious, disciplined and dependable, quietly climbing toward goals that matter.",
+            "core": "At your core you are an achiever. You take responsibility seriously and build success that lasts, step by careful step.",
+            "inner": "Emotionally you keep things under control and show care through action. You relax when you know the people you love are secure.",
+            "outer": "People meet you as mature and competent. You come across as serious at first, with a dry humor that surprises those who get closer."
+        },
+        "aquarius": {
+            "name": "Aquarius",
+            "symbol": "♒",
+            "dates": "January 20 – February 18",
+            "element": "Air",
+            "modality": "Fixed",
+            "ruler": "Uranus and Saturn",
+            "profile": "Aquarius is original, independent and humanitarian, always thinking about the future and how things could be better.",
+            "core": "At your core you are an innovator. You march to your own beat, and you care about fairness and ideas bigger than yourself.",
+            "inner": "Emotionally you need freedom and a little distance to think. You care deeply, but you show it in your own unconventional way.",
+            "outer": "People meet you as friendly and a bit unusual, in the best way. You come across as someone with fresh, unexpected ideas."
+        },
+        "pisces": {
+            "name": "Pisces",
+            "symbol": "♓",
+            "dates": "February 19 – March 20",
+            "element": "Water",
+            "modality": "Mutable",
+            "ruler": "Neptune and Jupiter",
+            "profile": "Pisces is dreamy, compassionate and creative, deeply tuned in to feelings, art and the unseen.",
+            "core": "At your core you are a dreamer and an empath. You feel what others feel, and your imagination is one of your greatest gifts.",
+            "inner": "Emotionally you absorb the moods around you. Quiet time, music and water help you rinse off the day and find yourself again.",
+            "outer": "People meet you as gentle and kind. You come across as soft-spoken and understanding, someone it is easy to confide in."
+        }
+    },
+    "nakshatras": {
+        "ashwini": {
+            "name": "Ashwini",
+            "lord": "ketu",
+            "deity": "the Ashwini Kumaras, the divine healers",
+            "symbol": "a horse's head",
+            "traits": "You move fast and start things others only talk about. Ashwini people are natural healers and fixers: when something breaks, you are already on it. The flip side is impatience with anything slow."
+        },
+        "bharani": {
+            "name": "Bharani",
+            "lord": "venus",
+            "deity": "Yama, keeper of dharma",
+            "symbol": "the womb",
+            "traits": "You carry a lot, and you carry it well. Bharani gives intensity, creative power and a strong sense of right and wrong. You feel things fully, and you can transform yourself completely when life demands it."
+        },
+        "krittika": {
+            "name": "Krittika",
+            "lord": "sun",
+            "deity": "Agni, the sacred fire",
+            "symbol": "a razor or blade",
+            "traits": "Krittika is the star that cuts away what is false. You have sharp judgment, a low tolerance for fakeness and a protective streak. When crossed, you cut cleanly and do not look back."
+        },
+        "rohini": {
+            "name": "Rohini",
+            "lord": "moon",
+            "deity": "Brahma, the creator",
+            "symbol": "an ox cart",
+            "traits": "Rohini is the Moon's favorite star. It gives magnetism, charm and a gift for making things grow, whether that is a home, a business or a relationship. People are drawn to you, sometimes more than you realize."
+        },
+        "mrigashira": {
+            "name": "Mrigashira",
+            "lord": "mars",
+            "deity": "Soma, the nectar of the Moon",
+            "symbol": "a deer's head",
+            "traits": "You are a searcher. Mrigashira gives a curious, restless mind that keeps looking for the next answer, the better place, the truer love. You are gentle on the surface and quietly persistent underneath."
+        },
+        "ardra": {
+            "name": "Ardra",
+            "lord": "rahu",
+            "deity": "Rudra, the storm",
+            "symbol": "a teardrop",
+            "traits": "Ardra is the storm that clears the air. You think deeply, feel intensely and are often changed by hard experiences rather than broken by them. You see through things, and you have little patience for surface-level answers."
+        },
+        "punarvasu": {
+            "name": "Punarvasu",
+            "lord": "jupiter",
+            "deity": "Aditi, mother of the gods",
+            "symbol": "a quiver of arrows",
+            "traits": "Punarvasu means \"the return of the light\". Whatever knocks you down, you come back, often wiser and kinder. You are generous, optimistic and happiest with a sense of home and meaning."
+        },
+        "pushya": {
+            "name": "Pushya",
+            "lord": "saturn",
+            "deity": "Brihaspati, teacher of the gods",
+            "symbol": "a cow's udder",
+            "traits": "Pushya is considered the most auspicious of all 27 stars. You nourish people: you are the one others lean on, the steady one, the giver of good advice. You value tradition, loyalty and doing things properly."
+        },
+        "ashlesha": {
+            "name": "Ashlesha",
+            "lord": "mercury",
+            "deity": "the Nagas, serpent deities",
+            "symbol": "a coiled serpent",
+            "traits": "Ashlesha gives penetrating insight. You read people quickly and accurately, sometimes before they understand themselves. You are private, strategic and hard to fool."
+        },
+        "magha": {
+            "name": "Magha",
+            "lord": "ketu",
+            "deity": "the Pitris, the ancestors",
+            "symbol": "a royal throne",
+            "traits": "Magha is the star of the throne. You have natural dignity and a strong sense of legacy, family and where you come from. People notice when you walk in, and you expect to be respected."
+        },
+        "purva phalguni": {
+            "name": "Purva Phalguni",
+            "lord": "venus",
+            "deity": "Bhaga, god of delight",
+            "symbol": "the front legs of a bed",
+            "traits": "Purva Phalguni is the star of pleasure and creativity. You are warm, expressive and generous, and you know how to enjoy life. Love, art and good company matter to you more than you let on."
+        },
+        "uttara phalguni": {
+            "name": "Uttara Phalguni",
+            "lord": "sun",
+            "deity": "Aryaman, god of contracts and friendship",
+            "symbol": "the back legs of a bed",
+            "traits": "Uttara Phalguni gives loyalty and reliability. You keep your word, show up for people and build partnerships that last. Others trust you with responsibility because you handle it."
+        },
+        "hasta": {
+            "name": "Hasta",
+            "lord": "moon",
+            "deity": "Savitar, the sun god who grants skill",
+            "symbol": "an open hand",
+            "traits": "Hasta is the star of the skilled hand. You are clever, practical and good at making things work, whether with tools, words or people. You have a lightness and humor that hides how capable you are."
+        },
+        "chitra": {
+            "name": "Chitra",
+            "lord": "mars",
+            "deity": "Vishvakarma, the divine architect",
+            "symbol": "a bright jewel",
+            "traits": "Chitra means \"brilliant\". You have an eye for design and beauty, and you want what you make, and how you look, to stand out. You are ambitious, original and not afraid to be seen."
+        },
+        "swati": {
+            "name": "Swati",
+            "lord": "rahu",
+            "deity": "Vayu, the wind",
+            "symbol": "a young shoot blown by the wind",
+            "traits": "Swati is the star of independence. You bend without breaking, adapt fast and need your freedom. You do best on your own terms, and you have a talent for business and diplomacy."
+        },
+        "vishakha": {
+            "name": "Vishakha",
+            "lord": "jupiter",
+            "deity": "Indra and Agni",
+            "symbol": "a triumphal arch",
+            "traits": "Vishakha is the star of purpose. Once you set a goal, you keep going until you reach it. You are determined, focused and more ambitious than people first assume."
+        },
+        "anuradha": {
+            "name": "Anuradha",
+            "lord": "saturn",
+            "deity": "Mitra, god of friendship",
+            "symbol": "a lotus",
+            "traits": "Anuradha is the lotus that blooms in muddy water. You are devoted, loyal and good at building friendships and teams. You succeed in difficult conditions, often far from where you started."
+        },
+        "jyeshtha": {
+            "name": "Jyeshtha",
+            "lord": "mercury",
+            "deity": "Indra, king of the gods",
+            "symbol": "an earring or protective umbrella",
+            "traits": "Jyeshtha means \"the eldest\". You are protective, capable and often take charge, even when no one asked. You carry responsibility early, and you have a sharp, strategic mind."
+        },
+        "mula": {
+            "name": "Mula",
+            "lord": "ketu",
+            "deity": "Nirriti, goddess of dissolution",
+            "symbol": "a bundle of roots",
+            "traits": "Mula means \"root\". You need to get to the bottom of things: the real reason, the deeper truth. Life may uproot you more than once, and each time you come out with clearer purpose."
+        },
+        "purva ashadha": {
+            "name": "Purva Ashadha",
+            "lord": "venus",
+            "deity": "Apas, the cosmic waters",
+            "symbol": "a fan",
+            "traits": "Purva Ashadha is called \"the invincible\". You are persuasive, confident and hard to defeat once you have decided. You inspire people and you do not give up easily."
+        },
+        "uttara ashadha": {
+            "name": "Uttara Ashadha",
+            "lord": "sun",
+            "deity": "the Vishvadevas, the universal gods",
+            "symbol": "an elephant's tusk",
+            "traits": "Uttara Ashadha means \"the later victory\". You may win later than others, but you win permanently. You are principled, responsible and built for the long game."
+        },
+        "shravana": {
+            "name": "Shravana",
+            "lord": "moon",
+            "deity": "Vishnu, the preserver",
+            "symbol": "an ear",
+            "traits": "Shravana is the star of listening. You learn by paying close attention, and people come to you because you actually hear them. You value knowledge, tradition and connection."
+        },
+        "dhanishta": {
+            "name": "Dhanishta",
+            "lord": "mars",
+            "deity": "the eight Vasus, gods of abundance",
+            "symbol": "a drum",
+            "traits": "Dhanishta is the star of wealth and rhythm. You have drive, timing and a talent for building resources. Music, movement and teamwork often play a big part in your life."
+        },
+        "shatabhisha": {
+            "name": "Shatabhisha",
+            "lord": "rahu",
+            "deity": "Varuna, god of the cosmic waters",
+            "symbol": "an empty circle",
+            "traits": "Shatabhisha means \"a hundred healers\". You are independent, private and drawn to solving hard problems. You see the world differently, and you are often ahead of your time."
+        },
+        "purva bhadrapada": {
+            "name": "Purva Bhadrapada",
+            "lord": "jupiter",
+            "deity": "Aja Ekapada, the one-footed goat",
+            "symbol": "a sword",
+            "traits": "Purva Bhadrapada gives intensity and idealism. You care about big causes and can be fierce in defending what you believe. You have depth that most people only see once they know you."
+        },
+        "uttara bhadrapada": {
+            "name": "Uttara Bhadrapada",
+            "lord": "saturn",
+            "deity": "Ahirbudhnya, serpent of the deep",
+            "symbol": "the back legs of a funeral cot",
+            "traits": "Uttara Bhadrapada gives calm, wisdom and emotional depth. You are steady when others panic, and you think before you act. People trust your judgment."
+        },
+        "revati": {
+            "name": "Revati",
+            "lord": "mercury",
+            "deity": "Pushan, the protector of travelers",
+            "symbol": "a fish",
+            "traits": "Revati is the last star, the one that guides souls safely home. You are kind, imaginative and protective of people who are lost or struggling. You have a gift for seeing the best in others."
+        }
+    },
+    "planets": {
+        "sun": {
+            "name": "Sun",
+            "years": 6,
+            "rules": "identity, authority, father figures and recognition",
+            "dasha": "a chapter about stepping into your own authority, with more visibility, ambition and recognition for who you are",
+            "antar": "puts the spotlight on your status, confidence and dealings with people in charge"
+        },
+        "moon": {
+            "name": "Moon",
+            "years": 10,
+            "rules": "the mind, emotions, mother, home and comfort",
+            "dasha": "a chapter led by feelings, focused on home, family, emotional needs and the people closest to you",
+            "antar": "turns your attention inward, to home, mood and emotional security"
+        },
+        "mars": {
+            "name": "Mars",
+            "years": 7,
+            "rules": "energy, courage, competition, property and siblings",
+            "dasha": "a chapter of action, drive, competition and bold moves, and sometimes conflict",
+            "antar": "brings energy and urgency: you want to act, compete and push things forward"
+        },
+        "mercury": {
+            "name": "Mercury",
+            "years": 17,
+            "rules": "the intellect, communication, trade, learning and skill",
+            "dasha": "a chapter of learning, communication, business and clever problem-solving",
+            "antar": "sharpens your mind and brings deals, studies, writing and new connections"
+        },
+        "jupiter": {
+            "name": "Jupiter",
+            "years": 16,
+            "rules": "wisdom, growth, teachers, children, faith and good fortune",
+            "dasha": "a chapter of growth and meaning, with teachers, expansion, faith and opportunities that open up",
+            "antar": "brings guidance, learning and a sense of things opening up"
+        },
+        "venus": {
+            "name": "Venus",
+            "years": 20,
+            "rules": "love, relationships, beauty, comfort, art and money",
+            "dasha": "a chapter of love, pleasure, beauty, comfort and material gains",
+            "antar": "favors relationships, enjoyment, creativity and spending on what you love"
+        },
+        "saturn": {
+            "name": "Saturn",
+            "years": 19,
+            "rules": "discipline, work, time, responsibility and endurance",
+            "dasha": "a building chapter of hard work, responsibility and results that come slowly but last",
+            "antar": "asks for patience and effort; it is a period of building, and it rewards discipline"
+        },
+        "rahu": {
+            "name": "Rahu",
+            "years": 18,
+            "rules": "ambition, hunger, the unconventional, foreign things and sudden change",
+            "dasha": "a chapter of ambition and reinvention, with unusual paths, big appetites and sudden turns",
+            "antar": "brings restlessness and ambition, unexpected openings and a pull toward the unfamiliar"
+        },
+        "ketu": {
+            "name": "Ketu",
+            "years": 7,
+            "rules": "detachment, intuition, spirituality and letting go",
+            "dasha": "a chapter of letting go, with detachment, inner work, intuition and spiritual searching",
+            "antar": "pulls you inward, clears out what no longer fits and sharpens your intuition"
+        }
+    },
+    "houses": {
+        "1": "self and personality",
+        "2": "money, family and speech",
+        "3": "courage, skills and communication",
+        "4": "home, mother and inner peace",
+        "5": "creativity, love affairs and intelligence",
+        "6": "work, competition and health routines",
+        "7": "marriage and partnership",
+        "8": "transformation and shared resources",
+        "9": "luck, teachers and higher learning",
+        "10": "career and reputation",
+        "11": "income, gains and friends",
+        "12": "spirituality, foreign lands and letting go"
+    },
+    "sign_lords": {
+        "aries": "mars",
+        "taurus": "venus",
+        "gemini": "mercury",
+        "cancer": "moon",
+        "leo": "sun",
+        "virgo": "mercury",
+        "libra": "venus",
+        "scorpio": "mars",
+        "sagittarius": "jupiter",
+        "capricorn": "saturn",
+        "aquarius": "saturn",
+        "pisces": "jupiter"
+    },
+    "dignities": {
+        "sun": {
+            "exalt": "aries",
+            "deg": 10,
+            "own": [
+                "leo"
+            ],
+            "debil": "libra"
+        },
+        "moon": {
+            "exalt": "taurus",
+            "deg": 3,
+            "own": [
+                "cancer"
+            ],
+            "debil": "scorpio"
+        },
+        "mars": {
+            "exalt": "capricorn",
+            "deg": 28,
+            "own": [
+                "aries",
+                "scorpio"
+            ],
+            "debil": "cancer"
+        },
+        "mercury": {
+            "exalt": "virgo",
+            "deg": 15,
+            "own": [
+                "gemini",
+                "virgo"
+            ],
+            "debil": "pisces"
+        },
+        "jupiter": {
+            "exalt": "cancer",
+            "deg": 5,
+            "own": [
+                "sagittarius",
+                "pisces"
+            ],
+            "debil": "capricorn"
+        },
+        "venus": {
+            "exalt": "pisces",
+            "deg": 27,
+            "own": [
+                "taurus",
+                "libra"
+            ],
+            "debil": "virgo"
+        },
+        "saturn": {
+            "exalt": "libra",
+            "deg": 20,
+            "own": [
+                "capricorn",
+                "aquarius"
+            ],
+            "debil": "aries"
+        }
+    }
+}

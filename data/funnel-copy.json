@@ -1,0 +1,150 @@
+{
+    "day_sign": {
+        "headlines": {
+            "a": "Below is the horoscope every {Sign} gets. Yours is different.",
+            "b": "The horoscope below is written for every {Sign} on Earth, about 680 million people. Yours can be written for one: you.",
+            "c": "Most {Signs} are actually {Prev} in Vedic astrology. Check yours before you read the horoscope below."
+        },
+        "sub": "Enter your birth details and get your personal horoscope for {when_label}, read from your own chart. Free, about 30 seconds, no email needed.",
+        "button": "Get my horoscope for {when} →"
+    },
+    "day": {
+        "headlines": {
+            "a": "Your horoscope for {when} shouldn't be shared with 680 million people.",
+            "b": "Sun-sign horoscopes read one planet. Your {when} is shaped by nine.",
+            "c": "Get the horoscope only your birth chart can give: yours, for {when_label}."
+        },
+        "sub": "Enter your birth details and get your personal horoscope for {when_label}. Free, about 30 seconds, no email needed.",
+        "button": "Get my horoscope for {when} →"
+    },
+    "love_sign": {
+        "headlines": {
+            "a": "Every {Sign} gets the same love horoscope below. Your love life runs on your 7th house.",
+            "b": "Two {Signs} can have opposite love lives. The difference is the 7th house of their charts.",
+            "c": "Your love story isn't written in your Sun sign. Find the house that holds it."
+        },
+        "sub": "Enter your birth details to see your 7th house of love and marriage, its ruling planet and your next turning point. Free, no email needed.",
+        "button": "Read my love chart →"
+    },
+    "love": {
+        "headlines": {
+            "b": "Your love life is written in your 7th house. Read yours.",
+            "c": "Your love story isn't written in your Sun sign. Find the house that holds it."
+        },
+        "sub": "Enter your birth details to see your 7th house of love and marriage, its ruling planet and your next turning point. Free, no email needed.",
+        "button": "Read my love chart →"
+    },
+    "marriage": {
+        "headlines": {
+            "b": "Marriage timing in Vedic astrology comes from one house and one planet. Find yours.",
+            "c": "Your future spouse is described in your birth chart. Read what yours says."
+        },
+        "sub": "Enter your birth details to see your 7th house, its ruling planet and the life chapters that activate it. Free, no email needed.",
+        "button": "Read my marriage chart →"
+    },
+    "career": {
+        "headlines": {
+            "b": "Your 10th house decides how you rise. Find out what's in yours.",
+            "c": "Some people are built to lead, some to build, some to create. Your chart says which."
+        },
+        "sub": "Enter your birth details to see your 10th house of career, its ruling planet and the chapter you are in now. Free, no email needed.",
+        "button": "Read my career chart →"
+    },
+    "money": {
+        "headlines": {
+            "b": "Wealth in Vedic astrology runs through two houses. Find out what's in yours.",
+            "c": "Some charts earn through skill, some through people, some through luck. See which is yours."
+        },
+        "sub": "Enter your birth details to see your houses of money and gains, their ruling planets and your timing. Free, no email needed.",
+        "button": "Read my money chart →"
+    },
+    "rising": {
+        "headlines": {
+            "b": "Your rising sign changes every two hours. Only your birth time can find it.",
+            "c": "Your rising sign is how the world sees you first. Find yours, in Vedic and Western."
+        },
+        "sub": "Enter your birth date, time and place. We calculate it in both systems and tell you what it says about you. No email needed.",
+        "button": "Find my rising sign →"
+    },
+    "rising_sign": {
+        "headlines": {
+            "b": "Is your rising sign really {Sign}? Your birth time decides. Check in 30 seconds.",
+            "c": "Western and Vedic astrology often disagree on your rising sign. See both."
+        },
+        "sub": "Enter your birth date, time and place. We calculate it in both systems and tell you what it says about you. No email needed.",
+        "button": "Check my rising sign →"
+    },
+    "moon": {
+        "headlines": {
+            "b": "Your Moon sign changes every two and a half days. The hour you were born decides yours.",
+            "c": "Your Moon sign says more about how you feel than your Sun sign ever will. Find yours."
+        },
+        "sub": "Enter your birth date, time and place. We calculate it in Vedic and Western, plus your birth star. No email needed.",
+        "button": "Find my Moon sign →"
+    },
+    "moon_sign": {
+        "headlines": {
+            "b": "Is your Moon really in {Sign}? The hour you were born decides. Check in 30 seconds.",
+            "c": "Many people have a different Moon sign in Vedic astrology. See both."
+        },
+        "sub": "Enter your birth date, time and place. We calculate it in Vedic and Western, plus your birth star. No email needed.",
+        "button": "Check my Moon sign →"
+    },
+    "big3": {
+        "headlines": {
+            "b": "Your Sun sign is one third of you. Find the other two.",
+            "c": "Most people know their Sun sign. Few know their Moon and Rising. Find all three."
+        },
+        "sub": "Enter your birth date, time and place. Your Sun, Moon and Rising in Western and Vedic astrology. No email needed.",
+        "button": "Find my big three →"
+    },
+    "nakshatra": {
+        "headlines": {
+            "b": "Vedic astrology says your birth star knows you better than your Sun sign. Find yours.",
+            "c": "One of 27 star groups held your Moon when you were born. Which one?"
+        },
+        "sub": "Enter your birth date, time and place to find your Nakshatra, its pada and what it says about you. No email needed.",
+        "button": "Find my birth star →"
+    },
+    "chart": {
+        "headlines": {
+            "b": "A birth chart is a map of the sky at the minute you were born. Here is what yours says.",
+            "c": "Not a wheel of symbols: your chart, read for you in plain English."
+        },
+        "sub": "Enter your birth date, time and place. Your Vedic and Western chart, your birth star and what makes your chart rare. No email needed.",
+        "button": "Read my chart →"
+    },
+    "saturn": {
+        "headlines": {
+            "b": "Your Saturn return is the most talked-about two years in astrology. Find your dates.",
+            "c": "Saturn comes back around age 29 and again around 59. Find out exactly when it reaches you."
+        },
+        "sub": "Enter your birth date, time and place to see where Saturn sits in your chart and when it returns. No email needed.",
+        "button": "Find my Saturn return →"
+    },
+    "year_sign": {
+        "headlines": {
+            "b": "Every {Sign} reads the same 2027 horoscope. Your chart has its own 2027.",
+            "c": "See the exact planetary periods you will live through in 2027."
+        },
+        "sub": "Enter your birth details to see your own 2027 timeline, period by period. Free, no email needed.",
+        "button": "Show my 2027 →"
+    },
+    "year": {
+        "headlines": {
+            "b": "Your 2027 isn't written in your Sun sign. It is in your chart's timeline.",
+            "c": "See the exact planetary periods you will live through in 2027."
+        },
+        "sub": "Enter your birth details to see your own 2027 timeline, period by period. Free, no email needed.",
+        "button": "Show my 2027 →"
+    },
+    "general": {
+        "headlines": {
+            "a": "Your birth chart is rarer than you think.",
+            "b": "Find out what your birth chart says that no horoscope can.",
+            "c": "About 360,000 people share your birthday. Almost none share your chart."
+        },
+        "sub": "Enter your birth date, time and place. Free, about 30 seconds, no email needed.",
+        "button": "Read my chart →"
+    }
+}

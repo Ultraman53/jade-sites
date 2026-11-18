@@ -1,0 +1,13 @@
+{
+  "_note": "Default names and prices shown on the pricing page. The live offer names rotate in the AWS brain, which also sets the real checkout prices.",
+  "currency": "USD",
+  "report_pages": 150,
+  "delivery": "by email within 24 hours",
+  "statement_descriptor": "WHOP*JADEASTROLOGY",
+  "refund_percent": 80,
+  "refund_days": 7,
+  "main":     {"name": "Your Vedic Life Report", "price": 49},
+  "bump":     {"name": "The Next 12 Months: When to Push, When to Wait", "price": 19},
+  "compat":   {"name": "What Your Partner Can't Put Into Words", "price": 29, "bonus": "Plus 1 personal question about your relationship, answered from both charts"},
+  "downsell": {"name": "Are You Two Written in the Stars?", "price": 19}
+}
