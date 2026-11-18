@@ -189,7 +189,7 @@ def legal(site):
     updated = f"Last updated: {site.now.strftime('%B %-d, %Y')}"
     mail = f'<a href="mailto:{EMAIL}">{EMAIL}</a>'
     pages = {
-        "about": ("About Us", f"""<p>{BRAND} publishes daily and weekly horoscopes for all twelve zodiac signs, free calculators, and personal readings based on your own birth chart.</p>
+        "about": ("About Us", f"""<p>{BRAND} publishes daily, weekly and monthly horoscopes for all twelve zodiac signs, free calculators, and personal readings based on your own birth chart.</p>
 <h2>How our readings are made</h2>
 <p>Your chart is calculated from astronomical data for the exact date, time and place you provide, in both the Vedic (sidereal) and Western (tropical) systems. Free readings and daily horoscopes are calculated and written automatically by our software. Paid reports are prepared and reviewed by our astrologer before they are sent, and nothing is sent without that review.</p>
 <h2>How we calculate rarity</h2>
@@ -374,6 +374,7 @@ def build_pages(site):
     body += "</section>"
     body += f'<h2 class="jade-h2">Today\'s horoscope · {e(site.today_label())}</h2>' + site.sign_grid("daily")
     body += '<h2 class="jade-h2">This week</h2>' + site.sign_grid("weekly")
+    body += f'<h2 class="jade-h2">This month · {e(site.now.strftime("%B %Y"))}</h2>' + site.sign_grid("monthly")
     body += '<h2 class="jade-h2">Free calculators</h2>' + site.chips([
         ("/birth-chart-calculator/", "Birth chart"), ("/rising-sign-calculator/", "Rising sign"),
         ("/moon-sign-calculator/", "Moon sign"), ("/big-three-calculator/", "Big three"),
@@ -387,27 +388,33 @@ def build_pages(site):
              "Today's horoscope for all 12 zodiac signs, plus a free personal reading calculated from your own birth chart.", body)
 
     # Hubs
-    for period, slug in (("daily", "horoscope-today"), ("weekly", "weekly-horoscope")):
-        when = "this week" if period == "weekly" else "today"
-        intro = ("Your week ahead for love, career, health and luck. Choose your sign to read this week's horoscope, updated every Sunday."
-                 if period == "weekly" else
-                 f"Choose your sign to read today's horoscope for love, career, health and luck, updated every morning. Today is <strong>{e(site.today_label())}</strong>.")
-        h1 = "Weekly Horoscope" if period == "weekly" else "Horoscope Today"
-        title = (f"Weekly Horoscope for All 12 Signs | {BRAND}" if period == "weekly"
-                 else f"Horoscope Today, {site.now.strftime('%B %-d, %Y')}: All 12 Signs | {BRAND}")
-        desc = ("Weekly horoscopes for all 12 zodiac signs: love, career, health and luck for the week ahead." if period == "weekly"
-                else "Today's horoscope for all 12 zodiac signs, plus a free personal reading calculated from your own birth chart.")
+    HUB = {
+        "daily": ("horoscope-today", "today", "Horoscope Today",
+                  f"Horoscope Today, {site.now.strftime('%B %-d, %Y')}: All 12 Signs | {BRAND}",
+                  "Today's horoscope for all 12 zodiac signs, plus a free personal reading calculated from your own birth chart.",
+                  f"Choose your sign to read today's horoscope for love, career, health and luck, updated every morning. Today is <strong>{e(site.today_label())}</strong>."),
+        "weekly": ("weekly-horoscope", "this week", "Weekly Horoscope", f"Weekly Horoscope for All 12 Signs | {BRAND}",
+                   "Weekly horoscopes for all 12 zodiac signs: love, career, health and luck for the week ahead.",
+                   "Your week ahead for love, career, health and luck. Choose your sign to read this week's horoscope, updated every Sunday."),
+        "monthly": ("monthly-horoscope", "this month", "Monthly Horoscope",
+                    f"Monthly Horoscope {site.now.strftime('%B %Y')}: All 12 Signs | {BRAND}",
+                    "Monthly horoscopes for all 12 zodiac signs: love, career, health and luck for the month ahead.",
+                    f"Your month ahead for love, career, health and luck. Choose your sign to read the horoscope for <strong>{e(site.now.strftime('%B %Y'))}</strong>, updated on the 1st of every month."),
+    }
+    for period, (slug, when, h1, title, desc, intro) in HUB.items():
         site.add(slug, title, desc, f'<div class="jade"><header class="jade-pagehead"><h1>{h1}</h1></header><p class="jade-intro">{intro}</p>'
                  + site.funnel("day", when=when, source=slug) + site.sign_grid(period) + "</div>")
 
-    # Sign pages: daily and weekly
+    # Sign pages: daily, weekly and monthly
+    WHEN = {"daily": "today", "weekly": "this week", "monthly": "this month"}
+    SLUG = {"daily": "{s}-horoscope-today", "weekly": "{s}-weekly-horoscope", "monthly": "{s}-monthly-horoscope"}
+    LINKTXT = {"daily": "horoscope today", "weekly": "weekly horoscope", "monthly": "monthly horoscope"}
     for s in SIGNS:
         n, sd = site.sname(s), site.signs[s]
-        for period in ("daily", "weekly"):
-            when = "this week" if period == "weekly" else "today"
-            other = "daily" if period == "weekly" else "weekly"
-            slug = f"{s}-weekly-horoscope" if period == "weekly" else f"{s}-horoscope-today"
-            h1 = f"{n} Weekly Horoscope" if period == "weekly" else f"{n} Horoscope Today"
+        for period in ("daily", "weekly", "monthly"):
+            when = WHEN[period]
+            slug = SLUG[period].format(s=s)
+            h1 = {"daily": f"{n} Horoscope Today", "weekly": f"{n} Weekly Horoscope", "monthly": f"{n} Monthly Horoscope"}[period]
             out = f'<div class="jade jade-signpage"><header class="jade-pagehead"><h1>{e(h1)}</h1></header>'
             out += (f'<header class="jade-signhead"><div class="jade-signhead__glyph" aria-hidden="true">{e(sd["symbol"])}</div>'
                     f'<div><p class="jade-eyebrow">{e(sd["dates"])}</p><p class="jade-facts">{e(sd["element"])} sign · {e(sd["modality"])} · Ruled by {e(sd["ruler"])}</p></div></header>')
@@ -416,14 +423,17 @@ def build_pages(site):
             out += site.folded(site.horoscope(s, period), s, when)
             out += (f'<p class="jade-crosslink"><a href="/{s}-horoscope-tomorrow/">{e(n)} horoscope tomorrow →</a> &nbsp; '
                     f'<a href="/{s}-love-horoscope/">{e(n)} love horoscope →</a> &nbsp; <a href="/{s}-compatibility/">{e(n)} compatibility →</a></p>')
-            other_slug = f"{s}-weekly-horoscope" if other == "weekly" else f"{s}-horoscope-today"
-            out += f'<p class="jade-crosslink"><a href="/{other_slug}/">{e(n)} {"weekly horoscope" if other == "weekly" else "horoscope today"} →</a></p>'
-            out += f'<h2 class="jade-h2">{"Weekly horoscopes for every sign" if period == "weekly" else "Today&#39;s horoscope for every sign"}</h2>'
+            out += '<p class="jade-crosslink">' + " &nbsp; ".join(
+                f'<a href="/{SLUG[o].format(s=s)}/">{e(n)} {LINKTXT[o]} →</a>' for o in WHEN if o != period) + "</p>"
+            out += '<h2 class="jade-h2">' + {"daily": "Today&#39;s horoscope for every sign", "weekly": "Weekly horoscopes for every sign",
+                                             "monthly": "Monthly horoscopes for every sign"}[period] + "</h2>"
             out += site.sign_grid(period) + "</div>"
-            title = (f"{n} Weekly Horoscope | {BRAND}" if period == "weekly"
-                     else f"{n} Horoscope Today, {site.now.strftime('%B %-d, %Y')} | {BRAND}")
-            desc = (f"Your {n} weekly horoscope: love, career, health and luck for the week ahead." if period == "weekly"
-                    else f"Today's {n} horoscope for love, career, health and luck, plus a free personal reading from your birth chart.")
+            title = {"daily": f"{n} Horoscope Today, {site.now.strftime('%B %-d, %Y')} | {BRAND}",
+                     "weekly": f"{n} Weekly Horoscope | {BRAND}",
+                     "monthly": f"{n} Monthly Horoscope, {site.now.strftime('%B %Y')} | {BRAND}"}[period]
+            desc = {"daily": f"Today's {n} horoscope for love, career, health and luck, plus a free personal reading from your birth chart.",
+                    "weekly": f"Your {n} weekly horoscope: love, career, health and luck for the week ahead.",
+                    "monthly": f"Your {n} monthly horoscope for {site.now.strftime('%B %Y')}: love, career, health and luck for the month ahead."}[period]
             site.add(slug, title, desc, out)
 
     # Free reading

@@ -104,7 +104,7 @@ class Site:
                "test": self.test, "brand": BRAND, "home": "/", "births": BIRTHS_PER_DAY, "email": EMAIL}
         mock = '<script src="/assets/jade-mock.js" defer></script>\n' if self.test else ""
         nav = [("horoscope-today", "Horoscope today"), ("weekly-horoscope", "Weekly"),
-               ("compatibility-calculator", "Compatibility"), ("birth-chart-calculator", "Birth chart"),
+               ("monthly-horoscope", "Monthly"), ("compatibility-calculator", "Compatibility"), ("birth-chart-calculator", "Birth chart"),
                ("free-reading", "Free reading")]
         cur = ' class="current-menu-item"'
         nav_html = "".join(f'<li{cur if s == slug else ""}><a href="{self.link(s)}">{e(t)}</a></li>' for s, t in nav)
@@ -140,7 +140,7 @@ class Site:
     def footer(self):
         cols = [
             ("Horoscopes", [("horoscope-today", "Horoscope today"), ("weekly-horoscope", "Weekly horoscope"),
-                            (f"{YEAR}-horoscope", f"{YEAR} horoscope"), ("love-horoscope", "Love horoscope")]),
+                            ("monthly-horoscope", "Monthly horoscope"), (f"{YEAR}-horoscope", f"{YEAR} horoscope"), ("love-horoscope", "Love horoscope")]),
             ("Calculators", [("birth-chart-calculator", "Birth chart"), ("rising-sign-calculator", "Rising sign"),
                              ("moon-sign-calculator", "Moon sign"), ("big-three-calculator", "Big three"),
                              ("saturn-return-calculator", "Saturn return")]),
@@ -180,6 +180,8 @@ class Site:
             return (self.now + dt.timedelta(days=1)).strftime("%A, %B %-d")
         if when == "this week":
             return "the week of " + self.week_start().strftime("%B %-d")
+        if when == "this month":
+            return self.now.strftime("%B %Y")
         return "today, " + self.now.strftime("%A, %B %-d")
 
     # ------------------------------------------------------------------ the free-reading funnel
@@ -338,6 +340,8 @@ class Site:
         block = self.h.get(period) or {}
         if period == "weekly":
             return block.get("label") or "This week"
+        if period == "monthly":
+            return block.get("label") or self.now.strftime("%B %Y")
         try:
             d = dt.date.fromisoformat(block.get("date", ""))
             return d.strftime("%A, %B %-d, %Y")
@@ -348,7 +352,7 @@ class Site:
     def horoscope(self, sign, period="daily", only=None):
         block, data = self.horo_data(period, sign)
         if not data:
-            what = {"weekly": "weekly", "tomorrow": "tomorrow"}.get(period, "daily")
+            what = {"weekly": "weekly", "monthly": "monthly", "tomorrow": "tomorrow"}.get(period, "daily")
             return (f'<section class="jade-horoscope"><p class="jade-notice">{e(self.sname(sign))}\'s {what} horoscope '
                     "is being prepared. Please check back in a few minutes.</p></section>")
         out = f'<section class="jade-horoscope"><p class="jade-date">{e(self.period_label(period))}</p>'
@@ -378,7 +382,7 @@ class Site:
         return out + "</section>"
 
     def folded(self, inner, sign, when):
-        what = {"this week": "weekly horoscope", "tomorrow": "horoscope for tomorrow"}.get(when, "horoscope for today")
+        what = {"this week": "weekly horoscope", "this month": "monthly horoscope", "tomorrow": "horoscope for tomorrow"}.get(when, "horoscope for today")
         n = self.sname(sign)
         return (f'<details class="jade-generic" id="jade-horo"><summary>Read the general {e(n)} {what} '
                 f'(the same for every {e(n)})</summary>{inner}</details>')
@@ -387,6 +391,7 @@ class Site:
         out = '<nav class="jade-grid" aria-label="Zodiac signs">'
         for s in SIGNS:
             href = {"daily": f"/{s}-horoscope-today/", "weekly": f"/{s}-weekly-horoscope/",
+                    "monthly": f"/{s}-monthly-horoscope/",
                     "compat": f"/{s}-compatibility/"}[kind]
             out += (f'<a class="jade-grid__item" href="{href}"><span class="jade-grid__glyph" aria-hidden="true">'
                     f'{e(self.symbol(s))}</span><span class="jade-grid__name">{e(self.sname(s))}</span>'
@@ -417,7 +422,8 @@ class Site:
         d = self.now.date()
         return {"daily": {"date": d.isoformat(), "sample": True, "signs": {s: one(s) for s in SIGNS}},
                 "tomorrow": {"date": (d + dt.timedelta(days=1)).isoformat(), "sample": True, "signs": {s: one(s) for s in SIGNS}},
-                "weekly": {"label": "Week of " + self.week_start().strftime("%B %-d"), "sample": True, "signs": {s: one(s) for s in SIGNS}}}
+                "weekly": {"label": "Week of " + self.week_start().strftime("%B %-d"), "sample": True, "signs": {s: one(s) for s in SIGNS}},
+                "monthly": {"label": self.now.strftime("%B %Y"), "sample": True, "signs": {s: one(s) for s in SIGNS}}}
 
     def sample_compat(self):
         pairs = {}
