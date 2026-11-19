@@ -175,17 +175,56 @@
 		mapsLoading.catch(function () { mapsLoading = null; });
 		return mapsLoading;
 	}
+	/* A place is given when the city box has a name OR the exact spot is pinned (lat and lng set). A pin whose city text was changed afterwards is dropped first (see exactPlace). */
+	function hasPlace(form, prefix) {
+		prefix = prefix || '';
+		form.querySelectorAll('[data-jade-exact]').forEach(function (b) { if ((b.getAttribute('data-prefix') || '') === prefix && b.__jadeSyncPin) b.__jadeSyncPin(); });
+		var c = q(form, prefix + 'birth_place'), la = q(form, prefix + 'lat'), ln = q(form, prefix + 'lng');
+		if (c && c.value.trim().length >= 2) return true;
+		return !!(la && ln && la.value && ln.value && isFinite(parseFloat(la.value)) && isFinite(parseFloat(ln.value)));
+	}
+	/* the name of a reverse-geocoded spot: city (or district), state or region, country; '' if Google gave nothing usable */
+	function placeLabel(results) {
+		function part(types) {
+			for (var i = 0; i < (results || []).length; i++) {
+				var comps = results[i].address_components || [];
+				for (var j = 0; j < comps.length; j++) {
+					for (var k = 0; k < types.length; k++) if ((comps[j].types || []).indexOf(types[k]) > -1 && comps[j].long_name) return comps[j].long_name;
+				}
+			}
+			return '';
+		}
+		var town = part(['locality', 'postal_town', 'sublocality', 'administrative_area_level_3', 'administrative_area_level_2']);
+		var region = part(['administrative_area_level_1']), country = part(['country']);
+		if (!town && !region) return '';
+		var out = [];
+		[town, region, country].forEach(function (x) { if (x && out.indexOf(x) < 0) out.push(x); });
+		return out.join(', ');
+	}
 	function exactPlace(box, form) {
 		var prefix = box.getAttribute('data-prefix') || '';
 		var panel = box.querySelector('.jade-exact__panel');
 		var status = box.querySelector('[data-exact-status]');
-		var map = null, marker = null, picked = null;
+		var map = null, marker = null, picked = null, geocoder = null;
+		var pinned = false, pinnedLabel = '', autoFilled = false;
+		var openBtn = box.querySelector('[data-exact-open]'), openText = openBtn.textContent;
+		var city = q(form, prefix + 'birth_place');
 		function asLatLng(v) { return v && typeof v.lat === 'function' ? v : new window.google.maps.LatLng(v.lat, v.lng); }
 		function setPick(latLng) {
 			picked = latLng;
 			marker.setPosition(latLng);
 			status.textContent = 'Pinned at ' + latLng.lat().toFixed(5) + ', ' + latLng.lng().toFixed(5) + '. Drag the pin to adjust.';
 		}
+		/* if the visitor changes the city text after pinning, the pin no longer describes that city: drop it */
+		function syncPin() {
+			if (!pinned || !city) return;
+			if ((city.value || '').trim() === pinnedLabel) return;
+			q(form, prefix + 'lat').value = ''; q(form, prefix + 'lng').value = '';
+			pinned = false; autoFilled = false;
+			openBtn.textContent = openText;
+		}
+		box.__jadeSyncPin = syncPin;
+		if (city) ['input', 'change', 'blur'].forEach(function (ev) { city.addEventListener(ev, syncPin); });
 		function searchBox(L) {
 			var input = box.querySelector('.jade-exact__search');
 			var pac = null;
@@ -221,7 +260,7 @@
 			input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); go(); } });
 			input.addEventListener('change', go);
 		}
-		box.querySelector('[data-exact-open]').addEventListener('click', function () {
+		openBtn.addEventListener('click', function () {
 			panel.hidden = false;
 			track('jade_exact_open');
 			loadMaps().then(function (L) {
@@ -230,8 +269,8 @@
 				marker = new L.Marker({ map: map, draggable: true });
 				map.addListener('click', function (ev) { setPick(ev.latLng); });
 				marker.addListener('dragend', function (ev) { setPick(ev.latLng); });
+				geocoder = new L.Geocoder();
 				searchBox(L);
-				var city = q(form, prefix + 'birth_place');
 				if (city && city.value) {
 					new L.Geocoder().geocode({ address: city.value }, function (r, st) {
 						if (st === 'OK' && r[0]) { map.setCenter(r[0].geometry.location); map.setZoom(13); }
@@ -244,10 +283,28 @@
 		box.querySelector('[data-exact-cancel]').addEventListener('click', function () { panel.hidden = true; });
 		box.querySelector('[data-exact-use]').addEventListener('click', function () {
 			if (!picked) { status.textContent = 'Tap the map to drop the pin on the exact place first.'; return; }
-			q(form, prefix + 'lat').value = picked.lat().toFixed(6);
-			q(form, prefix + 'lng').value = picked.lng().toFixed(6);
+			var la = picked.lat(), ln = picked.lng();
+			q(form, prefix + 'lat').value = la.toFixed(6);
+			q(form, prefix + 'lng').value = ln.toFixed(6);
+			pinned = true;
+			/* the reading needs a place name as well: keep a city the visitor typed; otherwise name the spot now (so "Next" works at once), then improve the name from a reverse geocode */
+			var fallback = 'Pinned location (' + la.toFixed(4) + ', ' + ln.toFixed(4) + ')';
+			if (city) {
+				var cur = (city.value || '').trim();
+				if (!cur || (autoFilled && cur === pinnedLabel)) { city.value = fallback; autoFilled = true; } else autoFilled = false;
+				pinnedLabel = (city.value || '').trim();
+				if (autoFilled && geocoder) {
+					var mine = pinnedLabel;
+					try {
+						geocoder.geocode({ location: { lat: la, lng: ln } }, function (r, st) {
+							var name = st === 'OK' ? placeLabel(r) : '';
+							if (name && pinned && autoFilled && (city.value || '').trim() === mine) { city.value = name; pinnedLabel = name; }
+						});
+					} catch (e) { /* the fallback label stays */ }
+				}
+			}
 			panel.hidden = true;
-			box.querySelector('[data-exact-open]').textContent = 'Exact place pinned ✓ (change)';
+			openBtn.textContent = 'Exact place pinned ✓ (change)';
 			track('jade_exact_pinned');
 		});
 	}
@@ -376,7 +433,7 @@
 		function validate(i) {
 			var s = STEPS[i];
 			if (s === 'date') { var v = dateValueOf(form); if (!v) return 'Please choose your month, day and year of birth.'; if (v === 'bad') return 'That date doesn’t exist. Please check the day.'; }
-			if (s === 'place' && q(form, 'birth_place').value.trim().length < 2) return 'Please enter the city you were born in.';
+			if (s === 'place' && !hasPlace(form)) return 'Please enter the city you were born in.';
 			if (s === 'time' && timeMode() === 'exact' && !q(form, 'birth_time').value) return 'Please enter your birth time, or choose “I know roughly” or “I don’t know”.';
 			if (s === 'focus' && !form.querySelector('[name="topics"]:checked')) return 'Pick at least one, so your reading starts with what matters to you.';
 			if (s === 'you' && q(form, 'first_name').value.trim().length < 1) return 'Please enter your first name, so your reading can be written for you.';
@@ -555,7 +612,7 @@
 				var dv = dateValueOf(form, p);
 				if (!dv || dv === 'bad') return showError(form, 'Please check ' + who[p] + ' date of birth.');
 				if (!q(form, p + 'time_unknown').checked && !q(form, p + 'birth_time').value) return showError(form, 'Please enter ' + who[p] + ' birth time, or tick that it isn’t known.');
-				if (q(form, p + 'birth_place').value.trim().length < 2) return showError(form, 'Please enter ' + who[p] + ' city of birth.');
+				if (!hasPlace(form, p)) return showError(form, 'Please enter ' + who[p] + ' city of birth.');
 			}
 			if (!q(form, 'partner_ok').checked) return showError(form, 'Please confirm you have their permission to use their birth details.');
 			var data = attribution(), f = fields(form);
@@ -693,7 +750,7 @@
 			if (!q(form, 'birth_date').value) return showError(form, 'Please enter their date of birth.');
 			var m = form.querySelector('[name="time_mode"]:checked');
 			if (m && m.value !== 'unknown' && !time.value) return showError(form, 'Please enter their birth time, or choose “I don’t know it”.');
-			if (q(form, 'birth_place').value.trim().length < 2) return showError(form, 'Please enter the city they were born in.');
+			if (!hasPlace(form)) return showError(form, 'Please enter the city they were born in.');
 			if (!q(form, 'consent').checked) return showError(form, 'Please confirm you have your partner’s permission.');
 			setBusy(form, true, 'Sending…');
 			api('partner', fields(form)).then(function (res) {
