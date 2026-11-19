@@ -149,6 +149,8 @@
 	}
 
 	/* ---------- Advanced search: pin the exact place of birth on a satellite map ---------- */
+	/* Google Maps is loaded only when this panel is opened. The address search is Google's current PlaceAutocompleteElement (Places API (New)); the old places.Autocomplete is no longer used.
+	   If that element cannot start, the plain text box stays and searches by pressing Enter. */
 	var mapsLoading = null;
 	function loadMaps() {
 		if (mapsLoading) return mapsLoading;
@@ -156,11 +158,18 @@
 			var key = res && res.success && res.data.maps_key;
 			if (!key) throw new Error('nokey');
 			return new Promise(function (ok, bad) {
+				if (window.google && window.google.maps && window.google.maps.importLibrary) return ok();
 				window.__jadeMapsReady = ok;
 				var s = document.createElement('script');
-				s.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key) + '&libraries=places&callback=__jadeMapsReady';
+				s.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key) + '&loading=async&callback=__jadeMapsReady';
 				s.async = true; s.onerror = bad;
 				document.head.appendChild(s);
+				setTimeout(function () { bad(new Error('timeout')); }, 12000);
+			});
+		}).then(function () {
+			var gm = window.google.maps;
+			return Promise.all([gm.importLibrary('maps'), gm.importLibrary('places'), gm.importLibrary('geocoding'), gm.importLibrary('marker')]).then(function (l) {
+				return { Map: l[0].Map, PlaceAutocompleteElement: l[1].PlaceAutocompleteElement, Geocoder: l[2].Geocoder, Marker: l[3].Marker || gm.Marker };
 			});
 		});
 		mapsLoading.catch(function () { mapsLoading = null; });
@@ -171,31 +180,60 @@
 		var panel = box.querySelector('.jade-exact__panel');
 		var status = box.querySelector('[data-exact-status]');
 		var map = null, marker = null, picked = null;
+		function asLatLng(v) { return v && typeof v.lat === 'function' ? v : new window.google.maps.LatLng(v.lat, v.lng); }
 		function setPick(latLng) {
 			picked = latLng;
 			marker.setPosition(latLng);
 			status.textContent = 'Pinned at ' + latLng.lat().toFixed(5) + ', ' + latLng.lng().toFixed(5) + '. Drag the pin to adjust.';
 		}
+		function searchBox(L) {
+			var input = box.querySelector('.jade-exact__search');
+			var pac = null;
+			try { pac = new L.PlaceAutocompleteElement({}); } catch (e) { pac = null; }
+			if (pac) {
+				/* the element draws its own text box (it cannot be attached to ours), so it takes the place of the old one */
+				pac.placeholder = input.getAttribute('placeholder') || '';
+				pac.setAttribute('aria-label', input.getAttribute('aria-label') || 'Search');
+				pac.style.width = '100%';
+				pac.style.colorScheme = 'light';
+				input.parentNode.insertBefore(pac, input);
+				input.style.display = 'none';
+				pac.addEventListener('gmp-select', function (ev) {
+					var place = ev && ev.placePrediction && ev.placePrediction.toPlace();
+					if (!place) return;
+					place.fetchFields({ fields: ['location'] }).then(function () {
+						if (!place.location) throw new Error('noloc');
+						var ll = asLatLng(place.location);
+						map.setCenter(ll); map.setZoom(18);
+						setPick(ll);
+					}).catch(function () { status.textContent = 'We couldn’t open that place. Tap the map to pin it instead.'; });
+				});
+				return;
+			}
+			function go() {
+				var text = (input.value || '').trim();
+				if (!text) return;
+				new L.Geocoder().geocode({ address: text }, function (r, st) {
+					if (st === 'OK' && r[0]) { map.setCenter(r[0].geometry.location); map.setZoom(17); status.textContent = 'Found it. Tap the map or drag the pin onto the exact spot.'; }
+					else status.textContent = 'We couldn’t find that. Try the city name, or tap the map.';
+				});
+			}
+			input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); go(); } });
+			input.addEventListener('change', go);
+		}
 		box.querySelector('[data-exact-open]').addEventListener('click', function () {
 			panel.hidden = false;
 			track('jade_exact_open');
-			loadMaps().then(function () {
+			loadMaps().then(function (L) {
 				if (map) return;
-				var g = window.google.maps;
-				map = new g.Map(box.querySelector('.jade-exact__map'), { center: { lat: 39.5, lng: -98.35 }, zoom: 4, mapTypeId: 'hybrid', streetViewControl: false, fullscreenControl: false });
-				marker = new g.Marker({ map: map, draggable: true });
+				map = new L.Map(box.querySelector('.jade-exact__map'), { center: { lat: 39.5, lng: -98.35 }, zoom: 4, mapTypeId: 'hybrid', streetViewControl: false, fullscreenControl: false });
+				marker = new L.Marker({ map: map, draggable: true });
 				map.addListener('click', function (ev) { setPick(ev.latLng); });
 				marker.addListener('dragend', function (ev) { setPick(ev.latLng); });
-				var search = new g.places.Autocomplete(box.querySelector('.jade-exact__search'), { fields: ['geometry', 'formatted_address', 'name'] });
-				search.addListener('place_changed', function () {
-					var p = search.getPlace();
-					if (!p.geometry) return;
-					map.setCenter(p.geometry.location); map.setZoom(18);
-					setPick(p.geometry.location);
-				});
+				searchBox(L);
 				var city = q(form, prefix + 'birth_place');
 				if (city && city.value) {
-					new g.Geocoder().geocode({ address: city.value }, function (r, st) {
+					new L.Geocoder().geocode({ address: city.value }, function (r, st) {
 						if (st === 'OK' && r[0]) { map.setCenter(r[0].geometry.location); map.setZoom(13); }
 					});
 				}
