@@ -521,25 +521,35 @@
 
 	/* ---------- Parts of the reading written by Claude arrive a little later ---------- */
 	var aiJobs = {};
+	var AI_WAIT_MS = 60000, AI_GAP_MS = 2000, AI_RETRY_GAP_MS = 3000, AI_MAX_FAILS = 5;
+	/* The brain writes the parts in rounds: each poll answers {pending:true} until the last round, then {parts:{slot: html}}. We keep asking for up to 60 seconds in all (not "30 answers": a poll can
+	   itself take 5 to 8 seconds), and a poll that fails (a dropped connection, a 5xx, a slow answer) is simply asked again after 3 seconds; only 5 failures in a row, or the 60 seconds, end it. */
 	function startAI(token) {
 		if (!token || aiJobs[token]) return;
-		var tries = 0;
+		var t0 = Date.now(), fails = 0;
 		function ask() {
-			return api('ai', { token: token }).then(function (res) {
-				if (res && res.success && res.data.pending && tries++ < 30) return new Promise(function (r) { setTimeout(r, 2000); }).then(ask);
-				return res;
+			return api('ai', { token: token }).catch(function () { return null; }).then(function (res) {
+				var d = res && res.success && res.data;
+				if (d && d.parts) return d.parts;                       // finished (it may be empty: then every card keeps its first text)
+				if (d && !d.pending) return null;                       // an answer with nothing to wait for
+				fails = d ? 0 : fails + 1;
+				if (fails >= AI_MAX_FAILS || Date.now() - t0 >= AI_WAIT_MS) return null;
+				return new Promise(function (r) { setTimeout(r, d ? AI_GAP_MS : AI_RETRY_GAP_MS); }).then(ask);
 			});
 		}
-		aiJobs[token] = ask().then(function (res) {
-			if (res && res.success && res.data.parts) fillAI(token, res.data.parts);
-		}).catch(function () {}).then(function () { aiJobs[token] = null; });
+		aiJobs[token] = ask().then(function (parts) { fillAI(token, parts || {}); }).catch(function () {}).then(function () { aiJobs[token] = null; });
 	}
+	/* Every finished card is swapped in; a card with no part (Claude's text for it was not good enough, or time ran out) keeps its first text and stops looking like it is waiting. */
 	function fillAI(token, parts) {
 		document.querySelectorAll('[data-jade-reading][data-token="' + token + '"] [data-ai-slot]').forEach(function (slot) {
+			if (!slot.classList.contains('is-loading')) return;
 			var n = slot.getAttribute('data-ai-slot');
-			if (!parts[n] || !slot.classList.contains('is-loading')) return;
-			slot.querySelector('.jr-ai__body').innerHTML = parts[n];
-			slot.classList.remove('is-loading'); slot.classList.add('is-ready', 'is-new');
+			if (typeof parts[n] === 'string' && parts[n]) {
+				slot.querySelector('.jr-ai__body').innerHTML = parts[n];
+				slot.classList.remove('is-loading'); slot.classList.add('is-ready', 'is-new');
+			} else {
+				slot.classList.remove('is-loading'); slot.classList.add('is-ready');
+			}
 		});
 	}
 
