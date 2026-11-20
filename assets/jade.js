@@ -482,50 +482,49 @@
 			data.topic = root.dataset.topic || 'general'; data.focus = root.dataset.focus || ''; data.source_page = root.dataset.source || '';
 			data.hv = root.dataset.hv || ''; data.intent = root.dataset.intent || 'general'; data.when = root.dataset.when || 'today';
 
+			//#wait:begin  the waiting screen: "Reading your chart…", true steps, and the reading shows only when Claude's version is ready (or after 40 seconds, with the code text)
 			form.hidden = true; calc.hidden = false;
-			var ct = calc.querySelector('.jf-calc__title');
-			if (!ct) { ct = document.createElement('p'); ct.className = 'jf-calc__title'; calc.insertBefore(ct, calc.querySelector('ul')); }
-			var tt = timeText();
-			ct.textContent = 'Placing the planets over ' + (city() || 'your birthplace') + (tt ? (tt.indexOf('around') === 0 ? ', ' + tt : ' at ' + tt) : '') + ', ' + dateText() + '…';
-			var items = calc.querySelectorAll('li'); items.forEach(function (li) { li.classList.remove('is-done'); });
-			var tick = 0, timer = setInterval(function () { if (items[tick]) items[tick].classList.add('is-done'); tick++; }, 700);
+			var begun = Date.now(), tt = timeText();
+			var steps = waitScreen(calc, ['Placing your planets', 'Reading your Moon and birth star', 'Mapping your life chapters', 'Writing your reading'], 'Reading your chart…',
+				'Placing the planets over ' + (city() || 'your birthplace') + (tt ? (tt.indexOf('around') === 0 ? ', ' + tt : ' at ' + tt) : '') + ', ' + dateText() + '…');
 			var minWait = new Promise(function (r) { setTimeout(r, 2900); });
 			var prepared = (prep && prep.key === JSON.stringify(b)) ? prep.promise : Promise.resolve(null);
 			var req = prepared.then(function (pr) { if (pr && pr.success && pr.data.token) data.token = pr.data.token; return api('reading', data); });
 			Promise.all([req, minWait]).then(function (out) {
-				clearInterval(timer);
 				var res = out[0];
-				calc.hidden = true;
 				if (!res || !res.success) {
-					form.hidden = false;
+					steps.stop(); calc.hidden = true; form.hidden = false;
 					var step = res && res.data && res.data.step ? STEPS.indexOf(res.data.step) : -1;
 					show(step >= 0 ? step : STEPS.length - 1);
 					return say((res && res.data && res.data.message) || 'Something went wrong. Please try again.');
 				}
 				track('jade_reading', { rarity: res.data.rarity || 0, headline: root.dataset.hv || '' });
-				showResult(root, result, res.data);
-			}).catch(function () { clearInterval(timer); calc.hidden = true; form.hidden = false; say('Connection problem. Please try again.'); });
+				return finishReading(root, result, res.data, begun, steps, calc);
+			}).catch(function () { steps.stop(); calc.hidden = true; form.hidden = false; say('Connection problem. Please try again.'); });
+			//#wait:end
 		});
 		show(0);
 	}
 
-	function showResult(root, result, d) {
+	//#wait:begin
+	/* `parts` given: the reading is shown with Claude's text already in place (or, for {} , with the code text everywhere). Not given: the code text first and Claude's text swapped in later (startAI). */
+	function showResult(root, result, d, parts) {
 		root.classList.add('has-result');
 		var head = root.querySelector('.jf-head'); if (head) head.hidden = true;
 		root.querySelector('.jf-box').hidden = true;
 		result.innerHTML = d.html; // built by our own brain from trusted templates
 		bindReading(result);
-		if (d.ai) startAI(d.token);
+		if (parts) fillAI(d.token, parts, true); else if (d.ai) startAI(d.token);
 		result.scrollIntoView({ behavior: 'smooth', block: 'start' });
 	}
 
-	/* ---------- Parts of the reading written by Claude arrive a little later ---------- */
+	/* ---------- Parts of the reading written by Claude ---------- */
 	var aiJobs = {};
-	var AI_WAIT_MS = 60000, AI_GAP_MS = 2000, AI_RETRY_GAP_MS = 3000, AI_MAX_FAILS = 5;
-	/* The brain writes the parts in rounds: each poll answers {pending:true} until the last round, then {parts:{slot: html}}. We keep asking for up to 60 seconds in all (not "30 answers": a poll can
-	   itself take 5 to 8 seconds), and a poll that fails (a dropped connection, a 5xx, a slow answer) is simply asked again after 3 seconds; only 5 failures in a row, or the 60 seconds, end it. */
-	function startAI(token) {
-		if (!token || aiJobs[token]) return;
+	var AI_WAIT_MS = 60000, AI_GAP_MS = 2000, AI_RETRY_GAP_MS = 3000, AI_MAX_FAILS = 5, AI_FIRST_WAIT_MS = 40000;
+	/* The brain writes the parts in rounds: each poll answers {pending:true} until the last round, then {parts:{slot: html}}. We keep asking for up to `ms` milliseconds in all (a poll can itself take
+	   5 to 8 seconds), and a poll that fails (a dropped connection, a 5xx, a slow answer) is simply asked again after 3 seconds; only 5 failures in a row, `ms` running out or ctl.stopped end it.
+	   Answers with the parts (an object, maybe empty), or null when nothing came. */
+	function waitAI(token, ms, ctl) {
 		var t0 = Date.now(), fails = 0;
 		function ask() {
 			return api('ai', { token: token }).catch(function () { return null; }).then(function (res) {
@@ -533,26 +532,74 @@
 				if (d && d.parts) return d.parts;                       // finished (it may be empty: then every card keeps its first text)
 				if (d && !d.pending) return null;                       // an answer with nothing to wait for
 				fails = d ? 0 : fails + 1;
-				if (fails >= AI_MAX_FAILS || Date.now() - t0 >= AI_WAIT_MS) return null;
+				if (fails >= AI_MAX_FAILS || Date.now() - t0 >= ms || (ctl && ctl.stopped)) return null;
 				return new Promise(function (r) { setTimeout(r, d ? AI_GAP_MS : AI_RETRY_GAP_MS); }).then(ask);
 			});
 		}
-		aiJobs[token] = ask().then(function (parts) { fillAI(token, parts || {}); }).catch(function () {}).then(function () { aiJobs[token] = null; });
+		return ask();
+	}
+	/* Used when a reading is already on the page (after the email unlock) and Claude's text may still be on its way: swapped in when it arrives, for up to 60 seconds. */
+	function startAI(token) {
+		if (!token || aiJobs[token]) return;
+		aiJobs[token] = waitAI(token, AI_WAIT_MS).then(function (parts) { fillAI(token, parts || {}); }).catch(function () {}).then(function () { aiJobs[token] = null; });
 	}
 	/* Every finished card is swapped in; a card with no part (Claude's text for it was not good enough, or time ran out) keeps its first text and stops looking like it is waiting. */
-	function fillAI(token, parts) {
+	function fillAI(token, parts, quiet) {
 		document.querySelectorAll('[data-jade-reading][data-token="' + token + '"] [data-ai-slot]').forEach(function (slot) {
 			if (!slot.classList.contains('is-loading')) return;
 			var n = slot.getAttribute('data-ai-slot');
 			if (typeof parts[n] === 'string' && parts[n]) {
 				slot.querySelector('.jr-ai__body').innerHTML = parts[n];
-				slot.classList.remove('is-loading'); slot.classList.add('is-ready', 'is-new');
+				slot.classList.remove('is-loading'); slot.classList.add('is-ready'); if (!quiet) slot.classList.add('is-new');
 			} else {
 				slot.classList.remove('is-loading'); slot.classList.add('is-ready');
 			}
 		});
 	}
 
+	/* ---------- The waiting screen ---------- */
+	/* Shows the title, one line of detail and the steps. The steps are true: while the brain is calculating the chart (planets, Moon and birth star, the life chapters) they move on every 1.5 seconds
+	   but never past "Mapping your life chapters"; "Writing your reading" is lit only once the brain has said that Claude is writing, and everything is ticked only when the reading is about to appear. */
+	function waitScreen(calc, labels, title, sub) {
+		var ul = calc.querySelector('ul');
+		if (!ul) { ul = document.createElement('ul'); calc.appendChild(ul); }          // a page whose waiting box has no list gets one
+		function line(cls, text) {
+			var el = calc.querySelector('.' + cls);
+			if (!el) { el = document.createElement('p'); el.className = cls; calc.insertBefore(el, ul); }
+			el.textContent = text;
+		}
+		line('jf-calc__title', title);
+		line('jf-calc__sub', sub || '');
+		ul.textContent = '';
+		var items = labels.map(function (l) { var li = document.createElement('li'); li.textContent = l; ul.appendChild(li); return li; });
+		var at = 0, timer = null;
+		function paint(n) { items.forEach(function (li, k) { li.classList.toggle('is-done', k < n); li.classList.toggle('is-active', k === n); }); at = n; }
+		paint(0);
+		timer = setInterval(function () { if (at < items.length - 2) paint(at + 1); }, 1500);
+		return {
+			writing: function (note) { clearInterval(timer); paint(items.length - 1); if (note) line('jf-calc__sub', note); },
+			done: function () { clearInterval(timer); paint(items.length); },
+			stop: function () { clearInterval(timer); }
+		};
+	}
+	/* The reading is ready to show. With Claude's text: wait here (at most 40 seconds from the moment the person pressed the button) for it, then show the reading with that text already in place. If it is
+	   not ready in time, or fails, show the reading with the code text; no error is shown and nothing changes on the page later. */
+	function finishReading(root, result, d, begun, steps, calc) {
+		var shown = false;
+		function reveal(parts) {
+			if (shown) return; shown = true;
+			steps.done();
+			setTimeout(function () { calc.hidden = true; showResult(root, result, d, parts); }, 450);
+		}
+		if (!d.ai || !d.token) { reveal(undefined); return; }
+		var left = AI_FIRST_WAIT_MS - (Date.now() - begun);
+		if (left <= 0) { reveal({}); return; }
+		steps.writing('Your reading is being written for you. This usually takes under half a minute.');
+		var ctl = { stopped: false };
+		setTimeout(function () { ctl.stopped = true; reveal({}); }, left);
+		waitAI(d.token, left, ctl).then(function (parts) { ctl.stopped = true; reveal(parts || {}); }).catch(function () { ctl.stopped = true; reveal({}); });
+	}
+	//#wait:end
 	function bindReading(scope) {
 		var reading = scope.querySelector('[data-jade-reading]');
 		if (!reading) return;
@@ -629,17 +676,18 @@
 			Object.keys(f).forEach(function (k) { data[k] = f[k]; });
 			data.a_birth_date = dateValueOf(form, 'a_'); data.b_birth_date = dateValueOf(form, 'b_');
 			data.intent = root.dataset.intent || 'compat';
+			//#wait:begin  the same waiting screen for the compatibility result
 			form.hidden = true; calc.hidden = false;
-			var items = calc.querySelectorAll('li'), tick = 0;
-			var timer = setInterval(function () { if (items[tick]) items[tick].classList.add('is-done'); tick++; }, 800);
+			var begun = Date.now();
+			var steps = waitScreen(calc, ['Placing both sets of planets', 'Comparing your two Moons and birth stars', 'Scoring the 36-point match', 'Writing your reading'], 'Reading your two charts…', '');
 			var minWait = new Promise(function (r) { setTimeout(r, 2500); });
 			Promise.all([api('compatibility', data), minWait]).then(function (out) {
-				clearInterval(timer); calc.hidden = true;
 				var res = out[0];
-				if (!res || !res.success) { form.hidden = false; return showError(form, (res && res.data && res.data.message) || 'Something went wrong. Please try again.'); }
+				if (!res || !res.success) { steps.stop(); calc.hidden = true; form.hidden = false; return showError(form, (res && res.data && res.data.message) || 'Something went wrong. Please try again.'); }
 				track('jade_compat', { score: res.data.score || 0 });
-				showResult(root, result, res.data);
-			}).catch(function () { clearInterval(timer); calc.hidden = true; form.hidden = false; showError(form, 'Connection problem. Please try again.'); });
+				return finishReading(root, result, res.data, begun, steps, calc);
+			}).catch(function () { steps.stop(); calc.hidden = true; form.hidden = false; showError(form, 'Connection problem. Please try again.'); });
+			//#wait:end
 		});
 	}
 
