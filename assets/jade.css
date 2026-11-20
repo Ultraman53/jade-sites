@@ -427,3 +427,9 @@ img { max-width: 100%; height: auto; }
 [data-jade-partner], [data-jade-refund] { display: grid; gap: .8rem; }
 .jade-field textarea { width: 100%; padding: .7rem .8rem; border: 1px solid var(--line); border-radius: 10px; font: inherit; resize: vertical; }
 .not-found { max-width: 640px; margin: 3rem auto; text-align: center; }
+
+/* Waiting screen of the free reading and the compatibility result ("Reading your chart…"): the line of detail under the title, and the step that is being worked on right now. */
+.jf-calc__sub { color: var(--jade-muted); font-size: .95rem; margin: .35rem auto 0; max-width: 34rem; min-height: 1.4em; }
+.jf-calc li.is-active { color: var(--jade-deep); font-weight: 600; }
+.jf-calc li.is-active::before { border-color: var(--jade); border-top-color: transparent; animation: jf-spin 1s linear infinite; }
+@media (prefers-reduced-motion: reduce) { .jf-calc li.is-active::before { animation: none; border-top-color: var(--jade); background: var(--jade-soft); } }
